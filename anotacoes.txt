@@ -1,0 +1,23 @@
+Instanciar matriz de neuronios
+Vai entrar x1, x2, x3, x4 (celular ao redor do agente) na metade dos primeiros neuronios (primeira camada)
+A primeira camada deve receber o x1,x2,x3,x4 e gerar o y para cada neuronio, a segunda camada deve receber os y das primeiras camadas e gerar um y novamente (o maior sera o movimento desejado) (4 neuronios, direita esquerda baixo cima)
+5 pesos para cada neuronio.
+
+Criar classe e montar estrutura de rede (matriz 4x4), instanciar, ter carga de pesos, ira entrar um vetor de 40 e inicializar ele nos pesos, depois fazer sequencia de propagacao (rede so ira fazer propagacao)
+
+cross over do algoritmo genetico deve ser a media do cromosso pai com a mae para gerar o filho
+
+exp = euler do java
+
+0 = vazio
+1 = parede
+2 = moeda
+3 = saida
+
+- 0 -
+1 A 1
+- 2 - 
+
+- x1 - 
+x4 A x2
+- x3 -   
