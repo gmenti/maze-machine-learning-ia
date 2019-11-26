@@ -1,0 +1,79 @@
+<html>
+  <head>
+    <title>Maze IA</title>
+    <style>
+      td,
+      th {
+        min-width: 15px;
+        max-width: 15px;
+        min-height: 15px;
+        max-height: 15px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="mazes"></div>
+    <div id="content"></div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
+    <script>
+      const contentDiv = document.getElementById('content');
+      const mazesDiv = document.getElementById('mazes');
+
+      const renderMaze = (maze, walkedPositions) => {
+        const table = document.createElement('table');
+        table.bgColor = 'black';
+
+        let movementNumber = 0;
+        maze.cells.forEach((row, y) => {
+          const tr = document.createElement('tr');
+          row.forEach((value, x) => {
+            const walked = walkedPositions.filter(position => position.x === x && position.y === y);
+            const td = document.createElement('td');
+            let style = 'padding: 20px;';
+            td.style = style;
+            td.textContent = value;
+            switch (value) {
+              case '0':
+                td.bgColor = 'grey';
+                break;
+              case 'M':
+                td.bgColor = 'orange';
+                break;
+              case 'E':
+                td.bgColor = 'red';
+                break;
+              case 'S':
+                td.bgColor = 'green';
+                findedExit = true;
+                break;
+            }
+            if (walked.length) {
+              td.bgColor = 'pink'; // walked.map(position => walkedPositions.indexOf(position)).join(', ');
+              style += 'text-align: center; color: white;'
+            }
+            tr.appendChild(td);
+          });
+          table.appendChild(tr);
+        });
+
+        if (contentDiv.lastElementChild) {
+          contentDiv.replaceChild(table, contentDiv.lastElementChild);
+        } else {
+          contentDiv.appendChild(table);
+        }
+      };
+
+      const socket = io();
+      let maze;
+      socket.on('maze', (maze2) => {
+        maze = maze2;
+        renderMaze(maze, []);
+        socket.emit('start');
+      });
+
+      socket.on('best', (positions) => {
+        renderMaze(maze, positions);
+      });
+    </script>
+  </body>
+</html>
