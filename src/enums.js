@@ -14,11 +14,11 @@ const CellType = {
 };
 
 const Points = {
-  Coin: 5,
-  Entry: 0,
-  Empty: 1,
-  Wall: 0,
-  Exit: 1000,
+  Coin: 20,
+  Entry: -20,
+  Empty: -1,
+  Wall: -40,
+  Exit: 100,
 };
 
 const Weight = {

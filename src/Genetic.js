@@ -10,7 +10,7 @@ class Genetic {
     this.initialPopulationSize = 1000;
     this.cromossomeSize = 40;
     this.population = this.makeInitialPopulation();
-    this.mutationsLimit = parseInt(this.cromossomeSize / 15);
+    this.mutationsLimit = parseInt(this.cromossomeSize / 20);
     this.maze = maze;
   }
 
@@ -44,24 +44,27 @@ class Genetic {
 
     let valuation = 0;
     let actualPosition = this.maze.initialPosition;
-    while (!this.maze.isWall(actualPosition)) {
+    while (!this.maze.isWall(actualPosition) && !this.maze.isExit(actualPosition)) {
       const nextCellTypes = this.maze.getNextCellTypes(actualPosition);
       const inputs = nextCellTypes.map(castCellTypeToWeight);
       const dir = network.run(inputs);
       actualPosition = this.maze.getNextPosition(actualPosition, dir);
 
-      const alreadyWalked = !!walkedPositions
-        .find(pos => pos.x === actualPosition.x && pos.y === actualPosition.y);
+      const alreadyWalkedPositions = walkedPositions
+        .filter(pos => pos.x === actualPosition.x && pos.y === actualPosition.y);
 
-      if (alreadyWalked) {
+      if (alreadyWalkedPositions.length >= 2) {
+        valuation = 0;
         break;
       }
 
       walkedPositions.push(actualPosition);
 
-      const cellType = this.maze.getValue(actualPosition);
-      const points = castCellTypeToPoint(cellType);
-      valuation += points;
+      if (!alreadyWalkedPositions.length) {
+        const cellType = this.maze.getValue(actualPosition);
+        const points = castCellTypeToPoint(cellType);
+        valuation += points;
+      }
     }
 
     return valuation;
@@ -122,10 +125,11 @@ class Genetic {
       child.push(sumMean);
     }
 
-    const mutationsAmount = this.getMutationAmount();
-    for (let i = 0; i < mutationsAmount; i++) {
+    let mutationsAmount = this.getMutationAmount();
+    while(mutationsAmount > 0) {
       const index = randomNumber(this.cromossomeSize - 1);
       child[index] = randomCR();
+      mutationsAmount--;
     }
 
     return child;

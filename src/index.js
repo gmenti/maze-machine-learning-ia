@@ -27,20 +27,25 @@ io.on('connection', async (socket) => {
       let best = 0;
       let bests = {};
       let lastLogAt = Date.now();
+      let generation = 0;
       while (true) {
         const child = genetic.createChild();
-        genetic.population.push(child);
         const valuation = genetic.getValuation(child);
+        if (valuation <= 0) {
+          continue;
+        }
+        generation++;
+        genetic.population.push(child);
         bests[valuation] = bests[valuation] || 0;
         bests[valuation] += 1;
         if (valuation > best) {
           best = valuation;
           socket.emit('best', genetic.getMovements(child));
-          if (best === 1029) {
-            break;
+          if (best === 167) {
+            // break;
           }
         }
-        if (genetic.population.length > genetic.initialPopulationSize * 10) {
+        if (false && genetic.population.length > genetic.initialPopulationSize * 50) {
           genetic.recyclePopulation();
           bests = {};
           genetic.population.forEach((cromossome) => {
@@ -52,7 +57,7 @@ io.on('connection', async (socket) => {
         if (Date.now() > lastLogAt + 1000) {
           // // await sleep(1);
           lastLogAt = Date.now();
-          console.log(bests);
+          console.log(bests, generation);
           await sleep(1);
         }
       }
